@@ -77,7 +77,7 @@ G5_g=G_g(5)
 G6_g=G_g(6)
 G7_g=G_g(7)
 
-
+save G_g_symbolic.mat
 
 
 
