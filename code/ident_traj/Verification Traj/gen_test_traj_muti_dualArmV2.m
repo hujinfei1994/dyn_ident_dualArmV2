@@ -105,6 +105,7 @@ for i=1:6
    plot(save_save_t,save_save_a(i,:))
    hold on
 end
+legend('J1','J2','J3','J4','J5','J6','J7')
 xlabel('time(s)')
 ylabel('acc(rad/s/s)')
 axis tight
