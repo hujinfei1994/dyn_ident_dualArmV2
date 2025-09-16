@@ -1,17 +1,21 @@
 clear;clc;close all
-filename ='flexiv_data_write_validation.mat';
+filename ='dualArmV2_data_write_validation.mat';
 load(filename)
-load T_flexiv.mat
 DOF = 7;
+L1=0.18;
+L2=0.27;
+L3=0.03857;
+L4=0.20;
+L5=0.065;
+L6=0.041;
+L = [L1;L2;L3;L4;L5;L6];
 %cond_num = '99';
 %cond_num = '106';
-%cond_num = '117';
-%cond_num = '122';
-cond_num = 'half';
-filename = [ 'beta_hat_x_',num2str(cond_num),'.mat'];
-
-
-load(filename)
+%filename = [ 'beta_hat_x_',num2str(cond_num),'.mat'];
+%load(filename)
+beta_hat = rand(50,1);
+betaf_hat = rand(14,1);
+beta_hat = [beta_hat;betaf_hat];
 qf = q_filtered;
 qf_dot = q_dot_filtered;
 qf_ddot = q_ddot_filtered;
@@ -21,8 +25,7 @@ M = size(q_filtered,1);
 %% ª≠Õº—È÷§
 uf_est = zeros(size(uf));
 for i = 1:M
-    Ys = Y_flexiv_symoro(qf(i,:)',qf_dot(i,:)',qf_ddot(i,:)');
-    Y = Ys*T_pinv_70_by_37;
+    Y = getY_dualArmV2(qf(i,:)',qf_dot(i,:)',qf_ddot(i,:)',L);
     Yf = zeros(DOF,DOF*2);
     for jnt = 1:DOF
         Yf(jnt,2*jnt-1) = qf_dot(i,jnt);
@@ -30,23 +33,26 @@ for i = 1:M
     end
     Y = [Y,Yf];
     U = uf(i,:)';
-   u_est(i,:) = (Y*beta_hat)';
+    u_est(i,:) = (Y*beta_hat)';
 end
 
 %% plot
 figure(2)
 for i = 1:7
     subplot(2,4,i)
-    plot(u_est(:,i));
+    plot(t,u_est(:,i));
     hold on
-    plot(uf(:,i))
+    plot(t,uf(:,i))
     if i ==7
         legend('estimate','actual')
     end
 end
+% filename = [ 'data_',num2str(cond_num),'.mat'];
+% save(filename,'u_est','uf')
 
-filename = [ 'data_',num2str(cond_num),'.mat'];
-save(filename,'u_est','uf')
+
+
+
 
 
 % figure(2)
